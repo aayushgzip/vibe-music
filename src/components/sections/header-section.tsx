@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
-import { ChevronsDown } from "lucide-react";
+// import { ChevronsDown } from "lucide-react"; // Removed import
 import { cn } from "@/lib/utils";
 
 interface HeaderSectionProps {
@@ -40,7 +40,7 @@ export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps)
   const titleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 duration-700 ease-out" : "";
   const subtitleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 delay-200 duration-700 ease-out" : "";
   const buttonAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-90 delay-500 duration-500 ease-out" : "";
-  const scrollCueAnimation = !reduceMotion ? "animate-bounce delay-1000" : "";
+  // const scrollCueAnimation = !reduceMotion ? "animate-bounce delay-1000" : ""; // Removed scroll cue animation variable
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 relative overflow-hidden gradient-background">
@@ -102,11 +102,11 @@ export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps)
         </Button>
       </div>
 
-      {!reduceMotion && (
+      {/* {!reduceMotion && ( // Removed scroll cue element
         <div className={cn("absolute bottom-10 left-1/2 -translate-x-1/2 text-primary", scrollCueAnimation)}>
           <ChevronsDown className="w-10 h-10" />
         </div>
-      )}
+      )} */}
     </section>
   );
 }
