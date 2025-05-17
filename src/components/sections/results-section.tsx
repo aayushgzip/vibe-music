@@ -49,16 +49,22 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     { subject: 'Emotion', score: vibeDimensions.emotion, fullMark: 100 },
   ] : [];
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareText = `My VibeTune is: ${soundtrackTitle}! ${emojiTone || ''}\n${soundtrackDescription}\nMy Spotify playlist theme: ${spotifyPlaylistTheme}\nFind your vibe: ${window.location.href}`;
     if (navigator.share) {
-      navigator.share({
-        title: 'My VibeTune Result!',
-        text: shareText,
-        url: window.location.href,
-      }).catch(console.error);
+      try {
+        await navigator.share({
+          title: 'My VibeTune Result!',
+          text: shareText,
+          url: window.location.href,
+        });
+        // You could add a success message here if needed, e.g., using a toast notification
+      } catch (error) {
+        console.error("Sharing failed:", error);
+        alert(`Sharing failed. This can happen on non-HTTPS sites or if permissions are denied. You can copy this text instead:\n\n${shareText}`);
+      }
     } else {
-      alert(`Share this with your friends!\n\n${shareText}`);
+      alert(`Sharing is not supported by your browser. You can copy this text:\n\n${shareText}`);
     }
   };
 
