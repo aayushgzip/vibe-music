@@ -4,9 +4,18 @@
 import type { SoundtrackGenerationOutput } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Share2, RotateCcw, Download, Music, ListMusic, Star } from "lucide-react";
+import { Share2, RotateCcw, Download, Music, ListMusic, Star, ExternalLink } from "lucide-react";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { cn } from "@/lib/utils";
+
+// Helper icon for Spotify, as lucide-react might not have it directly or consistently
+const SpotifyIcon = () => (
+  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 fill-current">
+    <title>Spotify</title>
+    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.363 17.404c-.21.323-.623.42-.946.21-.26-.172-4.284-2.623-7.184-2.623-2.9 0-4.925 2.451-7.184 2.623-.324.21-.736.113-.946-.21-.21-.324-.113-.736.21-.946C4.765 15.017 8.35 13.7 12 13.7s7.235 1.317 9.153 2.758c.323.21.42.623.21.946zm1.13-3.045c-.252.388-.75.505-1.137.253-3.255-2.002-7.158-2.92-11.037-1.658-.41.135-.84-.097-.976-.507-.135-.41.097-.84.507-.976C6.908 10.27 11.74 11.073 15.83 13.44c.388.252.505.75.253 1.137zm.1-3.377C15.56 8.203 10.01 7.92 6.014 9.13c-.456.14-.93-.117-1.07-.573-.14-.456.117-.93.573-1.07C10.29 6.073 16.49 6.417 19.87 8.98c.413.313.525.87.213 1.283s-.87.525-1.283.213z"/>
+  </svg>
+);
+
 
 interface ResultsSectionProps {
   result: SoundtrackGenerationOutput;
@@ -15,13 +24,12 @@ interface ResultsSectionProps {
 }
 
 export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSectionProps) {
-  const { soundtrackTitle, soundtrackDescription, spotifyPlaylistTheme, emojiTone } = result;
+  const { soundtrackTitle, soundtrackDescription, spotifyPlaylistTheme, emojiTone, suggestedSongs } = result;
 
   const cardAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-95 duration-700 ease-out" : "";
   
-  // Basic share functionality (can be expanded with navigator.share or specific platform links)
   const handleShare = () => {
-    const shareText = `My VibeTune is: ${soundtrackTitle}! ${emojiTone || ''}\n${soundtrackDescription}\nFind your vibe: ${window.location.href}`;
+    const shareText = `My VibeTune is: ${soundtrackTitle}! ${emojiTone || ''}\n${soundtrackDescription}\nMy Spotify playlist theme: ${spotifyPlaylistTheme}\nFind your vibe: ${window.location.href}`;
     if (navigator.share) {
       navigator.share({
         title: 'My VibeTune Result!',
@@ -29,15 +37,18 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
         url: window.location.href,
       }).catch(console.error);
     } else {
-      // Fallback for browsers that don't support navigator.share
       alert(`Share this with your friends!\n\n${shareText}`);
     }
   };
 
-  // Placeholder for download actions
   const handleDownload = (format: string) => {
     alert(`Download as ${format} feature coming soon!`);
   };
+
+  const createSpotifySearchUrl = () => {
+    const query = encodeURIComponent(`${spotifyPlaylistTheme} ${suggestedSongs ? suggestedSongs.join(' ') : ''}`);
+    return `https://open.spotify.com/search/${query}`;
+  }
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden gradient-background">
@@ -78,8 +89,27 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
           </div>
           
           <div className="p-4 bg-accent/10 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2"><ListMusic className="w-5 h-5 text-primary"/>Spotify Playlist Theme:</h3>
+            <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2 text-primary"><ListMusic className="w-5 h-5"/>Spotify Playlist Theme:</h3>
             <p className="text-primary text-lg font-medium">{spotifyPlaylistTheme}</p>
+            
+            {suggestedSongs && suggestedSongs.length > 0 && (
+              <div className="mt-4 text-left">
+                <h4 className="text-md font-semibold mb-2 text-primary/90">Suggested Tracks:</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-primary/80">
+                  {suggestedSongs.map((song, index) => (
+                    <li key={index}>{song}</li>
+                  ))}
+                </ul>
+                 <Button 
+                    onClick={() => window.open(createSpotifySearchUrl(), '_blank')} 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-4 w-full sm:w-auto border-primary text-primary hover:bg-primary/10 hover:text-primary"
+                  >
+                  <SpotifyIcon /> Open theme in Spotify
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t">
@@ -102,4 +132,3 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     </section>
   );
 }
-

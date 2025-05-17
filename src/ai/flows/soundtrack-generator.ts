@@ -43,6 +43,7 @@ const QuizOutputSchema = z.object({
   spotifyPlaylistTheme: z
     .string()
     .describe('A suggested Spotify playlist theme (e.g., rainy window vibes).'),
+  suggestedSongs: z.array(z.string()).describe('An array of 5 suggested song titles with artists (e.g., "Song Title - Artist Name") that fit the playlist theme.'),
   emojiTone: z.string().optional().describe('Optional emoji tone (e.g., ✨🔥😭).'),
 });
 
@@ -66,6 +67,7 @@ const prompt = ai.definePrompt({
   Movie Scene Soundtrack: {{{movieSceneSoundtrack}}}
 
   Create a fun title (e.g., Lo-fi Sad Boi), a 2-3 sentence description of the vibe, and a suggested Spotify playlist theme (e.g., rainy window vibes).
+  Also, provide an array of 5 specific song suggestions, including artist and title (e.g., "Bohemian Rhapsody - Queen"), that perfectly fit this playlist theme. These songs should be actual, well-known or fitting indie songs.
   Include an optional emoji tone.
   `,
 });
