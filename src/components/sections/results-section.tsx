@@ -175,7 +175,7 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
           <Button onClick={handleShare} size="lg" className="w-full sm:w-auto">
             <Share2 className="mr-2 h-5 w-5" /> Share
           </Button>
-          <Button onClick={onRetakeQuiz} variant="outline" size="lg" className="w-full sm:w-auto">
+          <Button onClick={onRetakeQuiz} variant="secondary" size="lg" className="w-full sm:w-auto">
             <RotateCcw className="mr-2 h-5 w-5" /> Retake Quiz
           </Button>
            <Link href="/leaderboard" passHref>
@@ -196,3 +196,4 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     </section>
   );
 }
+
