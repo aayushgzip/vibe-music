@@ -4,12 +4,13 @@
 import type { SoundtrackGenerationOutput } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Share2, RotateCcw, Download, Music, ListMusic, Star, Network } from "lucide-react";
+import { Share2, RotateCcw, Download, Music, ListMusic, Star, Network, BarChart3 } from "lucide-react";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { cn } from "@/lib/utils";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
+import Link from 'next/link';
 
 
 // Helper icon for Spotify, as lucide-react might not have it directly or consistently
@@ -177,6 +178,11 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
           <Button onClick={onRetakeQuiz} variant="outline" size="lg" className="w-full sm:w-auto">
             <RotateCcw className="mr-2 h-5 w-5" /> Retake Quiz
           </Button>
+           <Link href="/leaderboard" passHref>
+            <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                <BarChart3 className="mr-2 h-5 w-5" /> View Leaderboard
+            </Button>
+          </Link>
         </CardFooter>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t bg-muted/50">
             <Button onClick={() => handleDownload("Poster")} variant="secondary" size="sm">
@@ -190,4 +196,3 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     </section>
   );
 }
-
