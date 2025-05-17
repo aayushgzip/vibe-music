@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { SoundtrackGenerationOutput } from "@/lib/types";
@@ -78,7 +79,7 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
           
           <div className="p-4 bg-accent/10 rounded-lg">
             <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2"><ListMusic className="w-5 h-5 text-primary"/>Spotify Playlist Theme:</h3>
-            <p className="text-accent-foreground text-lg font-medium">{spotifyPlaylistTheme}</p>
+            <p className="text-primary text-lg font-medium">{spotifyPlaylistTheme}</p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t">
@@ -101,3 +102,4 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     </section>
   );
 }
+
