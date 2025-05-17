@@ -49,7 +49,7 @@ export default function LeaderboardPage() {
               </CardTitle>
             </div>
             <CardDescription className="text-lg text-foreground/80 pt-2">
-              Discover the most popular vibes! (Demo data)
+              Discover the most popular vibes!
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
