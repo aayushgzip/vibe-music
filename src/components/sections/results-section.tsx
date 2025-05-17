@@ -4,7 +4,7 @@
 import type { SoundtrackGenerationOutput } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Share2, RotateCcw, Download, Music, ListMusic, Star, Network, BarChart3 } from "lucide-react";
+import { Share2, RotateCcw, Music, ListMusic, Network, BarChart3 } from "lucide-react";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { cn } from "@/lib/utils";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
@@ -60,10 +60,6 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     } else {
       alert(`Share this with your friends!\n\n${shareText}`);
     }
-  };
-
-  const handleDownload = (format: string) => {
-    alert(`Download as ${format} feature coming soon!`);
   };
 
   const createSpotifySearchUrl = () => {
@@ -183,14 +179,6 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
                 <BarChart3 className="mr-2 h-5 w-5" /> View Leaderboard
             </Button>
           </Link>
-        </CardFooter>
-        <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t bg-muted/50">
-            <Button onClick={() => handleDownload("Poster")} variant="secondary" size="sm">
-                <Download className="mr-2 h-4 w-4" /> Save as Poster
-            </Button>
-            <Button onClick={() => handleDownload("Insta Story")} variant="secondary" size="sm">
-                <Star className="mr-2 h-4 w-4" /> Insta Story
-            </Button>
         </CardFooter>
       </Card>
     </section>
