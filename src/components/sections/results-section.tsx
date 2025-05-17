@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Share2, RotateCcw, Download, Music, ListMusic, Star, Network } from "lucide-react";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { cn } from "@/lib/utils";
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
 
 
@@ -190,3 +190,4 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     </section>
   );
 }
+
