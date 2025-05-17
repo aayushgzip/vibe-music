@@ -29,11 +29,11 @@ export function SoundwaveIcon(props: SVGProps<SVGSVGElement>) {
           50% { stroke-dasharray: 1; transform: scaleY(1); }
         }
       `}</style>
-      <line x1="4" y1="20" x2="4" y2="4" transform-origin="center" />
-      <line x1="8" y1="20" x2="8" y2="4" transform-origin="center" />
-      <line x1="12" y1="20" x2="12" y2="4" transform-origin="center" />
-      <line x1="16" y1="20" x2="16" y2="4" transform-origin="center" />
-      <line x1="20" y1="20" x2="20" y2="4" transform-origin="center" />
+      <line x1="4" y1="20" x2="4" y2="4" transformOrigin="center" />
+      <line x1="8" y1="20" x2="8" y2="4" transformOrigin="center" />
+      <line x1="12" y1="20" x2="12" y2="4" transformOrigin="center" />
+      <line x1="16" y1="20" x2="16" y2="4" transformOrigin="center" />
+      <line x1="20" y1="20" x2="20" y2="4" transformOrigin="center" />
     </svg>
   );
 }
