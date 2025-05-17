@@ -90,9 +90,6 @@ export default function LeaderboardPage() {
             </div>
           </CardContent>
         </Card>
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Note: This leaderboard shows example data. A real leaderboard would require a backend connection.
-        </p>
       </div>
     </main>
   );
