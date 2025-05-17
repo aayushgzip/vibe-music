@@ -4,9 +4,13 @@
 import type { SoundtrackGenerationOutput } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Share2, RotateCcw, Download, Music, ListMusic, Star, ExternalLink } from "lucide-react";
+import { Share2, RotateCcw, Download, Music, ListMusic, Star, Network } from "lucide-react";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { cn } from "@/lib/utils";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import type { ChartConfig } from "@/components/ui/chart";
+
 
 // Helper icon for Spotify, as lucide-react might not have it directly or consistently
 const SpotifyIcon = () => (
@@ -23,11 +27,27 @@ interface ResultsSectionProps {
   reduceMotion: boolean;
 }
 
+const chartConfig = {
+  vibeScore: {
+    label: "Score",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
+
+
 export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSectionProps) {
-  const { soundtrackTitle, soundtrackDescription, spotifyPlaylistTheme, emojiTone, suggestedSongs } = result;
+  const { soundtrackTitle, soundtrackDescription, spotifyPlaylistTheme, emojiTone, suggestedSongs, vibeDimensions } = result;
 
   const cardAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-95 duration-700 ease-out" : "";
   
+  const chartData = vibeDimensions ? [
+    { subject: 'Energy', score: vibeDimensions.energy, fullMark: 100 },
+    { subject: 'Focus', score: vibeDimensions.focus, fullMark: 100 },
+    { subject: 'Creativity', score: vibeDimensions.creativity, fullMark: 100 },
+    { subject: 'Social', score: vibeDimensions.social, fullMark: 100 },
+    { subject: 'Emotion', score: vibeDimensions.emotion, fullMark: 100 },
+  ] : [];
+
   const handleShare = () => {
     const shareText = `My VibeTune is: ${soundtrackTitle}! ${emojiTone || ''}\n${soundtrackDescription}\nMy Spotify playlist theme: ${spotifyPlaylistTheme}\nFind your vibe: ${window.location.href}`;
     if (navigator.share) {
@@ -87,6 +107,44 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
             <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2"><Music className="w-5 h-5 text-accent"/>The Vibe:</h3>
             <p className="text-foreground/90 text-left md:text-center leading-relaxed">{soundtrackDescription}</p>
           </div>
+
+          {vibeDimensions && chartData.length > 0 && (
+            <div className="p-4 bg-card-foreground/5 rounded-lg">
+              <h3 className="text-xl font-semibold mb-4 text-center flex items-center justify-center gap-2 text-primary">
+                <Network className="w-6 h-6"/> Your Vibe Profile
+              </h3>
+              <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px] w-full sm:max-h-[350px]">
+                <RadarChart
+                  data={chartData}
+                  cx="50%" 
+                  cy="50%" 
+                  outerRadius="70%" // Adjusted for better fit
+                >
+                  <ChartTooltip
+                    cursor={{ fill: "hsl(var(--muted))", fillOpacity: 0.3 }}
+                    content={<ChartTooltipContent indicator="line" />}
+                  />
+                  <PolarGrid gridType="polygon" stroke="hsl(var(--border))" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }} />
+                  <PolarRadiusAxis 
+                    angle={90} 
+                    domain={[0, 100]} 
+                    tickCount={5} 
+                    tickFormatter={(value) => `${value}`} 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={10}
+                  />
+                  <Radar
+                    name="Vibe Score" // Legend name
+                    dataKey="score" // Data key for values
+                    fill="var(--color-vibeScore)"
+                    fillOpacity={0.6}
+                    stroke="var(--color-vibeScore)"
+                  />
+                </RadarChart>
+              </ChartContainer>
+            </div>
+          )}
           
           <div className="p-4 bg-accent/10 rounded-lg">
             <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2 text-primary"><ListMusic className="w-5 h-5"/>Spotify Playlist Theme:</h3>

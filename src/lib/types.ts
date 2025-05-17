@@ -12,7 +12,11 @@ export interface AppQuizQuestion extends AIQuizQuestion {
 }
 
 // From generateQuizSoundtrack AI flow (matches its QuizInput and QuizOutput types)
-export type { QuizInput as SoundtrackGenerationInput, QuizOutput as SoundtrackGenerationOutput } from '@/ai/flows/soundtrack-generator';
+// We re-export to ensure SoundtrackGenerationOutput includes the new vibeDimensions
+import type { QuizInput as GI, QuizOutput as GO } from '@/ai/flows/soundtrack-generator';
+export type SoundtrackGenerationInput = GI;
+export type SoundtrackGenerationOutput = GO;
+
 
 // Storing user's selections. Key is question category, value is the selected option string.
 export type UserSelections = Partial<SoundtrackGenerationInput>;
