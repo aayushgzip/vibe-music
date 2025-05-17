@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
@@ -110,7 +111,13 @@ export default {
         "zoom-in": {
           "0%": { transform: "scale(0.95)", opacity: "0"},
           "100%": { transform: "scale(1)", opacity: "1"},
-        }
+        },
+        'text-fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '20%': { opacity: '1', transform: 'translateY(0)' },
+          '80%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-10px)' },
+        },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
@@ -119,6 +126,7 @@ export default {
         'slide-in-from-top': 'slide-in-from-top 0.5s ease-out',
         'slide-in-from-bottom': 'slide-in-from-bottom 0.5s ease-out',
         'zoom-in': 'zoom-in 0.3s ease-out',
+        'text-fade-in': 'text-fade-in 3s ease-in-out forwards', // Duration matches JS interval
   		}
   	}
   },

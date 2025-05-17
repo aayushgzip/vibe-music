@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
@@ -11,7 +13,30 @@ interface HeaderSectionProps {
   reduceMotion: boolean;
 }
 
+const vibesAndPreferences = [
+  "Chill Lo-fi Beats for Focus",
+  "Upbeat Pop for a Sunny Day",
+  "Epic Orchestral for Adventures",
+  "Indie Folk for Cozy Evenings",
+  "Driving Basslines for the Night Out",
+  "Ambient Sounds for Relaxation",
+  "Throwback Hits for Nostalgia",
+  "Energetic Rock to Power Through",
+];
+
 export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps) {
+  const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
+
+  useEffect(() => {
+    if (reduceMotion) return; // Skip animation if reduceMotion is enabled
+
+    const intervalId = setInterval(() => {
+      setCurrentVibeIndex((prevIndex) => (prevIndex + 1) % vibesAndPreferences.length);
+    }, 3000); // Change vibe every 3 seconds
+
+    return () => clearInterval(intervalId);
+  }, [reduceMotion]);
+
   const titleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 duration-700 ease-out" : "";
   const subtitleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 delay-200 duration-700 ease-out" : "";
   const buttonAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-90 delay-500 duration-500 ease-out" : "";
@@ -48,9 +73,23 @@ export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps)
         <h2 className={cn("text-3xl md:text-5xl font-bold text-primary", titleAnimation, !reduceMotion && "delay-100")}>
           🎧 What’s Your Life Soundtrack?
         </h2>
-        <p className={cn("text-lg md:text-xl text-foreground/80", subtitleAnimation)}>
-          Because your vibe deserves a theme song ✨🎶 Dive in and discover the unique sound that defines your current moment!
-        </p>
+        <div className={cn("text-lg md:text-xl text-foreground/80 min-h-[5rem] md:min-h-[3rem]", subtitleAnimation)}> {/* min-h to prevent layout shift */}
+          <p>
+            Discover your theme for:
+            <span 
+              key={currentVibeIndex} 
+              className={cn(
+                "font-semibold text-accent inline-block w-full pt-1",
+                !reduceMotion && "animate-text-fade-in" 
+              )}
+            >
+              {vibesAndPreferences[currentVibeIndex]}
+            </span>
+          </p>
+          <p className="mt-2">
+           Dive in and find the unique sound that defines your current moment! ✨🎶
+          </p>
+        </div>
         <Button
           size="lg"
           onClick={onStartQuiz}
