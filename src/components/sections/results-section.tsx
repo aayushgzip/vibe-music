@@ -171,7 +171,7 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
                     size="sm" 
                     className="mt-4 w-full sm:w-auto border-primary text-primary hover:bg-primary/10 hover:text-primary"
                   >
-                  <SpotifyIcon className="h-5 w-5 fill-current mr-2" /> Open theme in Spotify
+                  <SpotifyIcon className="h-5 w-5 fill-current mr-2" /> Find theme on Spotify
                 </Button>
               </div>
             )}
