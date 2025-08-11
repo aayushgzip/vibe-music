@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Trophy, Sparkles, CloudRain, Zap, Leaf, Ghost } from 'lucide-react';
+import { ArrowLeft, Home, Trophy, Sparkles, CloudRain, Zap, Leaf, Ghost } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MockVibe {
@@ -34,11 +34,19 @@ export default function LeaderboardPage() {
   return (
     <main className="min-h-screen flex flex-col items-center p-6 gradient-background">
       <div className="w-full max-w-4xl my-8">
-        <Link href="/" passHref>
-          <Button variant="outline" className="mb-6">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to VibeTune
-          </Button>
-        </Link>
+        <div className="flex justify-between items-center mb-6">
+          <Link href="/" passHref>
+            <Button variant="outline">
+              <Home className="mr-2 h-4 w-4" /> Home
+            </Button>
+          </Link>
+           <Link href="/" passHref>
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to VibeTune
+            </Button>
+          </Link>
+        </div>
+
 
         <Card className="shadow-xl">
           <CardHeader className="text-center bg-primary/10">
