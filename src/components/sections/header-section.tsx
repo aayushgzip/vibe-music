@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
@@ -16,18 +16,19 @@ interface HeaderSectionProps {
 }
 
 const vibesAndPreferences = [
-  { text: "Chill Lo-fi Beats for Focus", url: "https://open.spotify.com/search/Chill%20Lo-fi%20Beats%20for%20Focus" },
-  { text: "Upbeat Pop for a Sunny Day", url: "https://open.spotify.com/search/Upbeat%20Pop%20for%20a%20Sunny%20Day" },
-  { text: "Epic Orchestral for Adventures", url: "https://open.spotify.com/search/Epic%20Orchestral%20for%20Adventures" },
-  { text: "Indie Folk for Cozy Evenings", url: "https://open.spotify.com/search/Indie%20Folk%20for%20Cozy%20Evenings" },
-  { text: "Driving Basslines for the Night Out", url: "https://open.spotify.com/search/Driving%20Basslines%20for%20the%20Night%20Out" },
-  { text: "Ambient Sounds for Relaxation", url: "https://open.spotify.com/search/Ambient%20Sounds%20for%20Relaxation" },
-  { text: "Throwback Hits for Nostalgia", url: "https://open.spotify.com/search/Throwback%20Hits%20for%20Nostalgia" },
-  { text: "Energetic Rock to Power Through", url: "https://open.spotify.com/search/Energetic%20Rock%20to%20Power%20Through" },
+  { text: "Chill Lo-fi Beats for Focus", url: "https://open.spotify.com/search/Chill%20Lo-fi%20Beats%20for%20Focus", audioSrc: "/sounds/lofi-snippet.mp3" },
+  { text: "Upbeat Pop for a Sunny Day", url: "https://open.spotify.com/search/Upbeat%20Pop%20for%20a%20Sunny%20Day", audioSrc: "/sounds/pop-snippet.mp3" },
+  { text: "Epic Orchestral for Adventures", url: "https://open.spotify.com/search/Epic%20Orchestral%20for%20Adventures", audioSrc: "/sounds/orchestral-snippet.mp3" },
+  { text: "Indie Folk for Cozy Evenings", url: "https://open.spotify.com/search/Indie%20Folk%20for%20Cozy%20Evenings", audioSrc: "/sounds/folk-snippet.mp3" },
+  { text: "Driving Basslines for the Night Out", url: "https://open.spotify.com/search/Driving%20Basslines%20for%20the%20Night%20Out", audioSrc: "/sounds/bass-snippet.mp3" },
+  { text: "Ambient Sounds for Relaxation", url: "https://open.spotify.com/search/Ambient%20Sounds%20for%20Relaxation", audioSrc: "/sounds/ambient-snippet.mp3" },
+  { text: "Throwback Hits for Nostalgia", url: "https://open.spotify.com/search/Throwback%20Hits%20for%20Nostalgia", audioSrc: "/sounds/throwback-snippet.mp3" },
+  { text: "Energetic Rock to Power Through", url: "https://open.spotify.com/search/Energetic%20Rock%20to%20Power%20Through", audioSrc: "/sounds/rock-snippet.mp3" },
 ];
 
 export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (reduceMotion) return;
@@ -38,6 +39,32 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
 
     return () => clearInterval(intervalId);
   }, [reduceMotion]);
+
+  const handleMouseEnter = (audioSrc: string) => {
+    if (reduceMotion) return;
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    audioRef.current = new Audio(audioSrc);
+    audioRef.current.volume = 0.3; // Lower volume for snippets
+    audioRef.current.play().catch(e => console.error("Audio play error", e));
+  };
+
+  const handleMouseLeave = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  };
+  
+  useEffect(() => {
+    // Cleanup audio on component unmount
+    return () => {
+       if (audioRef.current) {
+          audioRef.current.pause();
+       }
+    };
+  }, []);
 
   const titleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 duration-700 ease-out" : "";
   const subtitleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 delay-200 duration-700 ease-out" : "";
@@ -77,7 +104,14 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
         <div className={cn("text-lg md:text-xl text-foreground/80 min-h-[5rem] md:min-h-[3rem]", subtitleAnimation)}>
           <p>
             Discover your theme for:
-            <Link href={vibesAndPreferences[currentVibeIndex].url} target="_blank" rel="noopener noreferrer" className="block">
+            <Link 
+              href={vibesAndPreferences[currentVibeIndex].url} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="block"
+              onMouseEnter={() => handleMouseEnter(vibesAndPreferences[currentVibeIndex].audioSrc)}
+              onMouseLeave={handleMouseLeave}
+            >
               <span 
                 key={currentVibeIndex} 
                 className={cn(
@@ -121,3 +155,4 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
     </section>
   );
 }
+
