@@ -6,15 +6,12 @@ import type { SoundtrackGenerationInput, SoundtrackGenerationOutput, QuizStage }
 import { HeaderSection } from '@/components/sections/header-section';
 import { QuizSection } from '@/components/sections/quiz-section';
 import { ResultsSection } from '@/components/sections/results-section';
-import { ChatSection } from '@/components/sections/chat-section'; // Import the new ChatSection
+import { ChatSection } from '@/components/sections/chat-section';
 import { AudioControl } from '@/components/audio/audio-control';
 import { generateQuizSoundtrack } from '@/ai/flows/soundtrack-generator';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-
-// Optional: Add a placeholder background audio URL
-// const BACKGROUND_AUDIO_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; // Replace with a real or placeholder URL
 
 export default function VibeTunePage() {
   const [quizStage, setQuizStage] = useState<QuizStage>('intro');
@@ -23,6 +20,7 @@ export default function VibeTunePage() {
   
   const [sfxEnabled, setSfxEnabled] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [moodColor, setMoodColor] = useState<string | null>(null);
 
   useEffect(() => {
     if (reduceMotion) {
@@ -33,9 +31,7 @@ export default function VibeTunePage() {
   }, [reduceMotion]);
   
   const handleStartQuiz = () => {
-    setQuizStage('loading'); // Transition to loading for quiz questions
-    // playStartSound(); // Placeholder
-    // Simulate a small delay if needed before QuizSection fetches questions
+    setQuizStage('loading');
     setTimeout(() => setQuizStage('quiz'), 100); 
   };
   
@@ -47,7 +43,6 @@ export default function VibeTunePage() {
     setQuizStage('generating_results');
     setAiError(null);
     try {
-      // Ensure all categories are present, provide defaults if necessary
       const completeAnswers: SoundtrackGenerationInput = {
         energyLevel: answers.energyLevel || "neutral",
         emotionalState: answers.emotionalState || "calm",
@@ -59,12 +54,10 @@ export default function VibeTunePage() {
       const result = await generateQuizSoundtrack(completeAnswers);
       setSoundtrackResult(result);
       setQuizStage('results');
-      // playSuccessSound(); // Placeholder
     } catch (error) {
       console.error("Failed to generate soundtrack:", error);
       setAiError("Oh no! Our vibe-o-meter is a bit fuzzy. Couldn't generate your soundtrack. Please try again!");
-      // playErrorSound(); // Placeholder
-      setQuizStage('results'); // Still go to results to show error
+      setQuizStage('results');
     }
   };
 
@@ -72,20 +65,29 @@ export default function VibeTunePage() {
     setSoundtrackResult(null);
     setAiError(null);
     setQuizStage('intro');
-    // playRetakeSound(); // Placeholder
   };
   
   const handleExitChat = () => {
     setQuizStage('intro');
   }
 
+  const handleMoodChange = (color: string) => {
+    setMoodColor(color);
+    // Placeholder for audio playback logic
+    // You could have a map of color ranges to audio snippets
+    // and play the corresponding one here.
+    // e.g., playMoodSound(color);
+  };
+
+  const pageStyle = moodColor ? { backgroundColor: moodColor, transition: 'background-color 0.5s ease' } : {};
+
   const renderContent = () => {
     switch (quizStage) {
       case 'intro':
-        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} onMoodChange={handleMoodChange} />;
       case 'chat':
         return <ChatSection onExitChat={handleExitChat} />;
-      case 'loading': // This state is very brief, QuizSection has its own loading for questions
+      case 'loading':
       case 'quiz':
         return <QuizSection onQuizComplete={handleQuizComplete} sfxEnabled={sfxEnabled} reduceMotion={reduceMotion}/>;
       case 'generating_results':
@@ -108,7 +110,6 @@ export default function VibeTunePage() {
         if (soundtrackResult) {
           return <ResultsSection result={soundtrackResult} onRetakeQuiz={handleRetakeQuiz} reduceMotion={reduceMotion}/>;
         }
-        // Fallback if something went wrong but no specific AI error message
         return (
            <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 gradient-background">
               <p className="text-xl text-destructive-foreground bg-destructive p-6 rounded-lg shadow-lg">An unexpected error occurred. Please try again.</p>
@@ -116,15 +117,14 @@ export default function VibeTunePage() {
             </section>
         );
       default:
-        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} onMoodChange={handleMoodChange} />;
     }
   };
 
   return (
-    <main className={cn("min-h-screen w-full", reduceMotion && "reduce-motion-active")}>
+    <main className={cn("min-h-screen w-full", reduceMotion && "reduce-motion-active", quizStage !== 'intro' && 'gradient-background')} style={quizStage === 'intro' ? pageStyle : {}}>
       {renderContent()}
       <AudioControl 
-        // backgroundAudioSrc={BACKGROUND_AUDIO_URL} // Uncomment and provide a URL to enable background audio
         sfxEnabled={sfxEnabled} 
         onSfxToggle={setSfxEnabled}
         reduceMotion={reduceMotion}

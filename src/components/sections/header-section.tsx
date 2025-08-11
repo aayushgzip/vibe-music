@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
 import { MessageCircle } from "lucide-react";
+import { MoodGradientBar } from "@/components/mood-gradient-bar";
 import { cn } from "@/lib/utils";
 
 interface HeaderSectionProps {
   onStartQuiz: () => void;
   onStartChat: () => void;
   reduceMotion: boolean;
+  onMoodChange: (color: string) => void;
 }
 
 const vibesAndPreferences = [
@@ -25,15 +27,15 @@ const vibesAndPreferences = [
   "Energetic Rock to Power Through",
 ];
 
-export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
+export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, onMoodChange }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
 
   useEffect(() => {
-    if (reduceMotion) return; // Skip animation if reduceMotion is enabled
+    if (reduceMotion) return;
 
     const intervalId = setInterval(() => {
       setCurrentVibeIndex((prevIndex) => (prevIndex + 1) % vibesAndPreferences.length);
-    }, 3000); // Change vibe every 3 seconds
+    }, 3000);
 
     return () => clearInterval(intervalId);
   }, [reduceMotion]);
@@ -43,7 +45,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   const buttonAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-90 delay-500 duration-500 ease-out" : "";
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 relative overflow-hidden gradient-background">
+    <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 dark:opacity-5">
         {[...Array(5)].map((_, i) => (
           <MusicNoteIcon
@@ -73,7 +75,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
         <h2 className={cn("text-3xl md:text-5xl font-bold text-primary", titleAnimation, !reduceMotion && "delay-100")}>
           🎧 What’s Your Life Soundtrack?
         </h2>
-        <div className={cn("text-lg md:text-xl text-foreground/80 min-h-[5rem] md:min-h-[3rem]", subtitleAnimation)}> {/* min-h to prevent layout shift */}
+        <div className={cn("text-lg md:text-xl text-foreground/80 min-h-[5rem] md:min-h-[3rem]", subtitleAnimation)}>
           <p>
             Discover your theme for:
             <span 
@@ -90,26 +92,30 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
            Dive in and find the unique sound that defines your current moment! ✨🎶
           </p>
         </div>
-        <div className={cn("flex flex-col sm:flex-row items-center justify-center gap-4", buttonAnimation)}>
-          <Button
-            size="lg"
-            onClick={onStartQuiz}
-            className={cn(
-              "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out bg-accent hover:bg-accent/90 text-accent-foreground"
-            )}
-          >
-            Start Your Vibe Check!
-          </Button>
-          <Button
-            size="lg"
-            variant="secondary"
-            onClick={onStartChat}
-            className={cn(
-              "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out"
-            )}
-          >
-            <MessageCircle className="mr-2 h-6 w-6" /> Chat with VibeBot
-          </Button>
+
+        <div className="pt-4 space-y-6">
+            <MoodGradientBar onMoodChange={onMoodChange} />
+            <div className={cn("flex flex-col sm:flex-row items-center justify-center gap-4 pt-4", buttonAnimation)}>
+                <Button
+                    size="lg"
+                    onClick={onStartQuiz}
+                    className={cn(
+                    "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out bg-accent hover:bg-accent/90 text-accent-foreground"
+                    )}
+                >
+                    Start Your Vibe Check!
+                </Button>
+                <Button
+                    size="lg"
+                    variant="secondary"
+                    onClick={onStartChat}
+                    className={cn(
+                    "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out"
+                    )}
+                >
+                    <MessageCircle className="mr-2 h-6 w-6" /> Chat with VibeBot
+                </Button>
+            </div>
         </div>
       </div>
     </section>
