@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -5,6 +6,7 @@ import type { SoundtrackGenerationInput, SoundtrackGenerationOutput, QuizStage }
 import { HeaderSection } from '@/components/sections/header-section';
 import { QuizSection } from '@/components/sections/quiz-section';
 import { ResultsSection } from '@/components/sections/results-section';
+import { ChatSection } from '@/components/sections/chat-section'; // Import the new ChatSection
 import { AudioControl } from '@/components/audio/audio-control';
 import { generateQuizSoundtrack } from '@/ai/flows/soundtrack-generator';
 import { Loader2 } from 'lucide-react';
@@ -36,6 +38,10 @@ export default function VibeTunePage() {
     // Simulate a small delay if needed before QuizSection fetches questions
     setTimeout(() => setQuizStage('quiz'), 100); 
   };
+  
+  const handleStartChat = () => {
+    setQuizStage('chat');
+  }
 
   const handleQuizComplete = async (answers: SoundtrackGenerationInput) => {
     setQuizStage('generating_results');
@@ -68,11 +74,17 @@ export default function VibeTunePage() {
     setQuizStage('intro');
     // playRetakeSound(); // Placeholder
   };
+  
+  const handleExitChat = () => {
+    setQuizStage('intro');
+  }
 
   const renderContent = () => {
     switch (quizStage) {
       case 'intro':
-        return <HeaderSection onStartQuiz={handleStartQuiz} reduceMotion={reduceMotion} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} />;
+      case 'chat':
+        return <ChatSection onExitChat={handleExitChat} />;
       case 'loading': // This state is very brief, QuizSection has its own loading for questions
       case 'quiz':
         return <QuizSection onQuizComplete={handleQuizComplete} sfxEnabled={sfxEnabled} reduceMotion={reduceMotion}/>;
@@ -104,7 +116,7 @@ export default function VibeTunePage() {
             </section>
         );
       default:
-        return <HeaderSection onStartQuiz={handleStartQuiz} reduceMotion={reduceMotion} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} />;
     }
   };
 

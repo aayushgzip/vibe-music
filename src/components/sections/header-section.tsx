@@ -5,11 +5,12 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
-// import { ChevronsDown } from "lucide-react"; // Removed import
+import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeaderSectionProps {
   onStartQuiz: () => void;
+  onStartChat: () => void;
   reduceMotion: boolean;
 }
 
@@ -24,7 +25,7 @@ const vibesAndPreferences = [
   "Energetic Rock to Power Through",
 ];
 
-export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps) {
+export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
 
   useEffect(() => {
@@ -40,7 +41,6 @@ export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps)
   const titleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 duration-700 ease-out" : "";
   const subtitleAnimation = !reduceMotion ? "animate-in fade-in-0 slide-in-from-top-10 delay-200 duration-700 ease-out" : "";
   const buttonAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-90 delay-500 duration-500 ease-out" : "";
-  // const scrollCueAnimation = !reduceMotion ? "animate-bounce delay-1000" : ""; // Removed scroll cue animation variable
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 relative overflow-hidden gradient-background">
@@ -90,23 +90,28 @@ export function HeaderSection({ onStartQuiz, reduceMotion }: HeaderSectionProps)
            Dive in and find the unique sound that defines your current moment! ✨🎶
           </p>
         </div>
-        <Button
-          size="lg"
-          onClick={onStartQuiz}
-          className={cn(
-            "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out bg-accent hover:bg-accent/90 text-accent-foreground",
-            buttonAnimation
-          )}
-        >
-          Start Your Vibe Check!
-        </Button>
-      </div>
-
-      {/* {!reduceMotion && ( // Removed scroll cue element
-        <div className={cn("absolute bottom-10 left-1/2 -translate-x-1/2 text-primary", scrollCueAnimation)}>
-          <ChevronsDown className="w-10 h-10" />
+        <div className={cn("flex flex-col sm:flex-row items-center justify-center gap-4", buttonAnimation)}>
+          <Button
+            size="lg"
+            onClick={onStartQuiz}
+            className={cn(
+              "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out bg-accent hover:bg-accent/90 text-accent-foreground"
+            )}
+          >
+            Start Your Vibe Check!
+          </Button>
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={onStartChat}
+            className={cn(
+              "px-10 py-6 text-xl font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out"
+            )}
+          >
+            <MessageCircle className="mr-2 h-6 w-6" /> Chat with VibeBot
+          </Button>
         </div>
-      )} */}
+      </div>
     </section>
   );
 }

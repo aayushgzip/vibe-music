@@ -1,3 +1,4 @@
+
 // From generateQuizContent AI flow
 export interface AIQuizQuestion {
   question: string; // This is questionText
@@ -21,4 +22,10 @@ export type SoundtrackGenerationOutput = GO;
 // Storing user's selections. Key is question category, value is the selected option string.
 export type UserSelections = Partial<SoundtrackGenerationInput>;
 
-export type QuizStage = 'loading' | 'intro' | 'quiz' | 'generating_results' | 'results';
+export type QuizStage = 'loading' | 'intro' | 'quiz' | 'generating_results' | 'results' | 'chat';
+
+// For the chatbot
+export interface ChatMessage {
+  role: 'user' | 'model';
+  content: string;
+}
