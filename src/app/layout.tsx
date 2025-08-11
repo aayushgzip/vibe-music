@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google'; // Changed from GeistSans to Inter
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AudioProvider } from '@/context/audio-provider';
 
 const inter = Inter({ // Use Inter
   variable: '--font-inter', // Updated variable name
@@ -28,8 +30,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <AudioProvider>
+            {children}
+            <Toaster />
+          </AudioProvider>
         </ThemeProvider>
       </body>
     </html>

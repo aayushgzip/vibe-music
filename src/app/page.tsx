@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import type { SoundtrackGenerationInput, SoundtrackGenerationOutput, QuizStage } from '@/lib/types';
 import { HeaderSection } from '@/components/sections/header-section';
 import { QuizSection } from '@/components/sections/quiz-section';
@@ -12,43 +12,15 @@ import { generateQuizSoundtrack } from '@/ai/flows/soundtrack-generator';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAudio } from '@/context/audio-provider';
 
 export default function VibeTunePage() {
   const [quizStage, setQuizStage] = useState<QuizStage>('intro');
   const [soundtrackResult, setSoundtrackResult] = useState<SoundtrackGenerationOutput | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   
-  const [sfxEnabled, setSfxEnabled] = useState(true);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const { stopLoopingAudio } = useAudio();
 
-  // Lifted audio state from HeaderSection
-  const [loopingAudio, setLoopingAudio] = useState<{ src: string; isPlaying: boolean } | null>(null);
-  const loopAudioRef = useRef<HTMLAudioElement | null>(null);
-
-
-  useEffect(() => {
-    if (reduceMotion) {
-      document.documentElement.classList.add('reduce-motion');
-    } else {
-      document.documentElement.classList.remove('reduce-motion');
-    }
-  }, [reduceMotion]);
-
-  // Lifted audio effect from HeaderSection
-  useEffect(() => {
-    const audioElement = loopAudioRef.current;
-    if (loopingAudio && audioElement) {
-      if (loopingAudio.isPlaying) {
-        audioElement.play().catch(e => console.error("Error playing looping audio:", e));
-      } else {
-        audioElement.pause();
-      }
-    }
-    // Cleanup on unmount
-    return () => {
-      audioElement?.pause();
-    }
-  }, [loopingAudio]);
   
   const handleStartQuiz = () => {
     setQuizStage('loading');
@@ -58,34 +30,6 @@ export default function VibeTunePage() {
   const handleStartChat = () => {
     setQuizStage('chat');
   }
-  
-  // Lifted audio handler from HeaderSection
-  const handleLoopToggle = (audioSrc: string) => {
-    // If another song is looping, stop it first.
-    if (loopAudioRef.current && loopAudioRef.current.src !== audioSrc) {
-        loopAudioRef.current.pause();
-        loopAudioRef.current = null;
-    }
-
-    // If we're toggling the current looping song
-    if (loopingAudio && loopingAudio.src === audioSrc) {
-        const shouldPlay = !loopingAudio.isPlaying;
-        setLoopingAudio({ src: audioSrc, isPlaying: shouldPlay });
-    } else { // It's a new song to loop
-        if(!loopAudioRef.current) {
-            loopAudioRef.current = new Audio(audioSrc);
-            loopAudioRef.current.loop = true;
-            loopAudioRef.current.volume = 0.4;
-        } else {
-            // If the element exists but src is different
-            if(loopAudioRef.current.src !== new URL(audioSrc, window.location.origin).toString()) {
-                loopAudioRef.current.src = audioSrc;
-            }
-        }
-        setLoopingAudio({ src: audioSrc, isPlaying: true });
-    }
-  };
-
 
   const handleQuizComplete = async (answers: SoundtrackGenerationInput) => {
     setQuizStage('generating_results');
@@ -112,11 +56,7 @@ export default function VibeTunePage() {
   const handleRetakeQuiz = () => {
     setSoundtrackResult(null);
     setAiError(null);
-    // Stop music when going home
-    if(loopAudioRef.current) {
-      loopAudioRef.current.pause();
-      setLoopingAudio(null);
-    }
+    stopLoopingAudio();
     setQuizStage('intro');
   };
   
@@ -131,16 +71,13 @@ export default function VibeTunePage() {
           <HeaderSection 
             onStartQuiz={handleStartQuiz} 
             onStartChat={handleStartChat} 
-            reduceMotion={reduceMotion}
-            loopingAudio={loopingAudio}
-            onLoopToggle={handleLoopToggle}
           />
         );
       case 'chat':
         return <ChatSection onExitChat={handleExitChat} />;
       case 'loading':
       case 'quiz':
-        return <QuizSection onQuizComplete={handleQuizComplete} sfxEnabled={sfxEnabled} reduceMotion={reduceMotion}/>;
+        return <QuizSection onQuizComplete={handleQuizComplete} />;
       case 'generating_results':
         return (
           <section className="min-h-screen flex flex-col items-center justify-center p-6 text-center gradient-background">
@@ -159,7 +96,7 @@ export default function VibeTunePage() {
           );
         }
         if (soundtrackResult) {
-          return <ResultsSection result={soundtrackResult} onRetakeQuiz={handleRetakeQuiz} reduceMotion={reduceMotion}/>;
+          return <ResultsSection result={soundtrackResult} onRetakeQuiz={handleRetakeQuiz} />;
         }
         return (
            <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 gradient-background">
@@ -168,19 +105,14 @@ export default function VibeTunePage() {
             </section>
         );
       default:
-        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} loopingAudio={loopingAudio} onLoopToggle={handleLoopToggle} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} />;
     }
   };
 
   return (
-    <main className={cn("min-h-screen w-full", reduceMotion && "reduce-motion-active", quizStage !== 'intro' && 'gradient-background')}>
+    <main className={cn("min-h-screen w-full", quizStage !== 'intro' && 'gradient-background')}>
       {renderContent()}
-      <AudioControl 
-        sfxEnabled={sfxEnabled} 
-        onSfxToggle={setSfxEnabled}
-        reduceMotion={reduceMotion}
-        onReduceMotionToggle={setReduceMotion}
-      />
+      <AudioControl />
     </main>
   );
 }

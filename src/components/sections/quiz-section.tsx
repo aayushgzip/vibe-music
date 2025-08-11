@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -8,24 +9,24 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { generateQuizContent } from '@/ai/flows/quiz-content-generator';
 import { cn } from "@/lib/utils";
+import { useAudio } from '@/context/audio-provider';
 
 interface QuizSectionProps {
   onQuizComplete: (answers: SoundtrackGenerationInput) => void;
-  sfxEnabled: boolean;
-  reduceMotion: boolean;
 }
 
 const QUIZ_CATEGORIES: Array<AppQuizQuestion['category']> = [
   'energyLevel', 'emotionalState', 'socialVibes', 'innerMonologue', 'aestheticPreference', 'movieSceneSoundtrack'
 ];
 
-export function QuizSection({ onQuizComplete, sfxEnabled, reduceMotion }: QuizSectionProps) {
+export function QuizSection({ onQuizComplete }: QuizSectionProps) {
   const [questions, setQuestions] = useState<AppQuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userSelections, setUserSelections] = useState<UserSelections>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSkipping, setIsSkipping] = useState(false);
+  const { reduceMotion } = useAudio();
 
   // Placeholder for click sound effect
   // const [playClickSound] = useSound("/sounds/click.mp3", { soundEnabled: sfxEnabled });

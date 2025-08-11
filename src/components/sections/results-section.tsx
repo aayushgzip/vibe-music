@@ -11,6 +11,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import Link from 'next/link';
+import { useAudio } from "@/context/audio-provider";
 
 
 // Helper icon for Spotify
@@ -29,7 +30,6 @@ const SpotifyIcon = (props: React.SVGProps<SVGSVGElement>) => (
 interface ResultsSectionProps {
   result: SoundtrackGenerationOutput;
   onRetakeQuiz: () => void;
-  reduceMotion: boolean;
 }
 
 const chartConfig = {
@@ -40,8 +40,9 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 
-export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSectionProps) {
+export function ResultsSection({ result, onRetakeQuiz }: ResultsSectionProps) {
   const { soundtrackTitle, soundtrackDescription, spotifyPlaylistTheme, emojiTone, suggestedSongs, vibeDimensions } = result;
+  const { reduceMotion } = useAudio();
 
   const cardAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-95 duration-700 ease-out" : "";
   

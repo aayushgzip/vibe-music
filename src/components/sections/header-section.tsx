@@ -9,13 +9,11 @@ import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
 import { MessageCircle, Info, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
+import { useAudio } from '@/context/audio-provider';
 
 interface HeaderSectionProps {
   onStartQuiz: () => void;
   onStartChat: () => void;
-  reduceMotion: boolean;
-  loopingAudio: { src: string; isPlaying: boolean } | null;
-  onLoopToggle: (audioSrc: string) => void;
 }
 
 const vibesAndPreferences = [
@@ -29,9 +27,17 @@ const vibesAndPreferences = [
   { text: "Energetic Rock to Power Through", url: "https://open.spotify.com/search/Energetic%20Rock%20to%20Power%20Through", audioSrc: "/sounds/rock-snippet.mp3" },
 ];
 
-export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, loopingAudio, onLoopToggle }: HeaderSectionProps) {
+export function HeaderSection({ onStartQuiz, onStartChat }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  
+  const { 
+    loopingAudio, 
+    toggleLoopingAudio, 
+    playHoverSound, 
+    stopHoverSound,
+    reduceMotion,
+  } = useAudio();
   
   const hoverAudioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -86,44 +92,18 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, loopingA
   const handleMouseEnter = (audioSrc: string) => {
     setIsHovering(true);
     stopInterval();
-    if (reduceMotion || (loopingAudio && loopingAudio.isPlaying)) return;
-
-    if (hoverAudioRef.current && hoverAudioRef.current.src !== audioSrc) {
-        hoverAudioRef.current.pause();
-        hoverAudioRef.current = null;
-    }
-    
-    if (!hoverAudioRef.current) {
-        hoverAudioRef.current = new Audio(audioSrc);
-        hoverAudioRef.current.volume = 0.3;
-    }
-    
-    hoverAudioRef.current.currentTime = 0;
-    hoverAudioRef.current.play().catch(e => {
-        if ((e as DOMException).name !== 'AbortError') {
-            console.error("Audio play error", e);
-        }
-    });
+    playHoverSound(audioSrc);
   };
 
   const handleMouseLeave = () => {
     setIsHovering(false);
-    if (hoverAudioRef.current) {
-      hoverAudioRef.current.pause();
-      hoverAudioRef.current = null;
-    }
+    stopHoverSound();
   };
 
   const handleLoopToggle = (e: React.MouseEvent, audioSrc: string) => {
       e.stopPropagation(); // prevent link navigation
       e.preventDefault();
-      
-      // Stop hover audio if it's playing
-      if(hoverAudioRef.current) {
-        hoverAudioRef.current.pause();
-        hoverAudioRef.current = null;
-      }
-      onLoopToggle(audioSrc);
+      toggleLoopingAudio(audioSrc);
   }
   
   useEffect(() => {
