@@ -4,7 +4,7 @@
 import type { SoundtrackGenerationOutput } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Share2, RotateCcw, Music, ListMusic, Network, BarChart3 } from "lucide-react";
+import { Share2, RotateCcw, Music, ListMusic, Network, BarChart3, Home } from "lucide-react";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { cn } from "@/lib/utils";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
@@ -186,7 +186,12 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
           </Button>
            <Link href="/leaderboard" passHref>
             <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                <BarChart3 className="mr-2 h-5 w-5" /> View Leaderboard
+                <BarChart3 className="mr-2 h-5 w-5" /> Leaderboard
+            </Button>
+          </Link>
+          <Link href="/" passHref>
+            <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                <Home className="mr-2 h-5 w-5" /> Home
             </Button>
           </Link>
         </CardFooter>
@@ -194,4 +199,5 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
     </section>
   );
 }
+
 
