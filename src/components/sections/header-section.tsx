@@ -42,12 +42,23 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
 
   const handleMouseEnter = (audioSrc: string) => {
     if (reduceMotion) return;
-    if (audioRef.current) {
-      audioRef.current.pause();
+
+    if (audioRef.current && audioRef.current.src !== audioSrc) {
+        audioRef.current.pause();
+        audioRef.current = null;
     }
-    audioRef.current = new Audio(audioSrc);
-    audioRef.current.volume = 0.3; // Lower volume for snippets
-    audioRef.current.play().catch(e => console.error("Audio play error", e));
+    
+    if (!audioRef.current) {
+        audioRef.current = new Audio(audioSrc);
+        audioRef.current.volume = 0.3;
+    }
+    
+    audioRef.current.currentTime = 0;
+    audioRef.current.play().catch(e => {
+        if ((e as DOMException).name !== 'AbortError') {
+            console.error("Audio play error", e);
+        }
+    });
   };
 
   const handleMouseLeave = () => {
@@ -155,4 +166,3 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
     </section>
   );
 }
-
