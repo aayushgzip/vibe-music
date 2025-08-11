@@ -101,11 +101,9 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
       
       <div className="relative w-full max-w-2xl my-8 z-10">
         <div className="w-full flex justify-start mb-6">
-            <Link href="/" passHref>
-              <Button variant="outline">
-                <Home className="mr-2 h-4 w-4" /> Home
-              </Button>
-            </Link>
+            <Button variant="outline" onClick={onRetakeQuiz}>
+              <Home className="mr-2 h-4 w-4" /> Home
+            </Button>
         </div>
 
         <Card className={cn("w-full text-center shadow-2xl", cardAnimation)}>
