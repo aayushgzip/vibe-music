@@ -14,6 +14,8 @@ interface HeaderSectionProps {
   onStartQuiz: () => void;
   onStartChat: () => void;
   reduceMotion: boolean;
+  loopingAudio: { src: string; isPlaying: boolean } | null;
+  onLoopToggle: (audioSrc: string) => void;
 }
 
 const vibesAndPreferences = [
@@ -27,14 +29,11 @@ const vibesAndPreferences = [
   { text: "Energetic Rock to Power Through", url: "https://open.spotify.com/search/Energetic%20Rock%20to%20Power%20Through", audioSrc: "/sounds/rock-snippet.mp3" },
 ];
 
-export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
+export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, loopingAudio, onLoopToggle }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   
   const hoverAudioRef = useRef<HTMLAudioElement | null>(null);
-  const loopAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  const [loopingAudio, setLoopingAudio] = useState<{ src: string; isPlaying: boolean } | null>(null);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
@@ -76,11 +75,13 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   };
 
   useEffect(() => {
-    if (!isHovering) {
+    if (!isHovering && !(loopingAudio && loopingAudio.isPlaying)) {
         startInterval();
+    } else {
+        stopInterval();
     }
     return () => stopInterval();
-  }, [reduceMotion, isHovering]);
+  }, [reduceMotion, isHovering, loopingAudio]);
 
   const handleMouseEnter = (audioSrc: string) => {
     setIsHovering(true);
@@ -107,50 +108,28 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
 
   const handleMouseLeave = () => {
     setIsHovering(false);
-    startInterval();
     if (hoverAudioRef.current) {
       hoverAudioRef.current.pause();
       hoverAudioRef.current = null;
     }
   };
 
-  const handleLoopToggle = (audioSrc: string) => {
-    // If another song is looping, stop it first.
-    if (loopAudioRef.current && loopAudioRef.current.src !== audioSrc) {
-        loopAudioRef.current.pause();
-        loopAudioRef.current = null;
-    }
-
-    // If we're toggling the current looping song
-    if (loopingAudio && loopingAudio.src === audioSrc) {
-        const shouldPlay = !loopingAudio.isPlaying;
-        if (loopAudioRef.current) {
-            if (shouldPlay) {
-                loopAudioRef.current.play();
-            } else {
-                loopAudioRef.current.pause();
-            }
-        }
-        setLoopingAudio({ src: audioSrc, isPlaying: shouldPlay });
-    } else { // It's a new song to loop
-        if(hoverAudioRef.current) hoverAudioRef.current.pause(); // Stop hover audio
-        
-        if(!loopAudioRef.current) {
-            loopAudioRef.current = new Audio(audioSrc);
-            loopAudioRef.current.loop = true;
-            loopAudioRef.current.volume = 0.4;
-        }
-        
-        loopAudioRef.current.play();
-        setLoopingAudio({ src: audioSrc, isPlaying: true });
-    }
-  };
+  const handleLoopToggle = (e: React.MouseEvent, audioSrc: string) => {
+      e.stopPropagation(); // prevent link navigation
+      e.preventDefault();
+      
+      // Stop hover audio if it's playing
+      if(hoverAudioRef.current) {
+        hoverAudioRef.current.pause();
+        hoverAudioRef.current = null;
+      }
+      onLoopToggle(audioSrc);
+  }
   
   useEffect(() => {
     // Cleanup audio on component unmount
     return () => {
        if (hoverAudioRef.current) hoverAudioRef.current.pause();
-       if (loopAudioRef.current) loopAudioRef.current.pause();
        stopInterval();
     };
   }, []);
@@ -198,7 +177,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
              <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={() => handleLoopToggle(vibesAndPreferences[currentVibeIndex].audioSrc)}
+                onClick={(e) => handleLoopToggle(e, vibesAndPreferences[currentVibeIndex].audioSrc)}
                 className="h-8 w-8 text-accent"
               >
                 {loopingAudio && loopingAudio.src === vibesAndPreferences[currentVibeIndex].audioSrc && loopingAudio.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
@@ -255,5 +234,3 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
     </section>
   );
 }
-
-    
