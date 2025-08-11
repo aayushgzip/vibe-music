@@ -29,18 +29,29 @@ const vibesAndPreferences = [
 export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (reduceMotion) return;
-
-    const intervalId = setInterval(() => {
+  const startInterval = () => {
+    if (reduceMotion || intervalRef.current) return;
+    intervalRef.current = setInterval(() => {
       setCurrentVibeIndex((prevIndex) => (prevIndex + 1) % vibesAndPreferences.length);
     }, 3000);
+  };
+  
+  const stopInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
-    return () => clearInterval(intervalId);
+  useEffect(() => {
+    startInterval();
+    return () => stopInterval();
   }, [reduceMotion]);
 
   const handleMouseEnter = (audioSrc: string) => {
+    stopInterval();
     if (reduceMotion) return;
 
     if (audioRef.current && audioRef.current.src !== audioSrc) {
@@ -62,6 +73,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   };
 
   const handleMouseLeave = () => {
+    startInterval();
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
@@ -74,6 +86,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
        if (audioRef.current) {
           audioRef.current.pause();
        }
+       stopInterval();
     };
   }, []);
 
