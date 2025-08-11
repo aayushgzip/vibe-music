@@ -28,6 +28,7 @@ const vibesAndPreferences = [
 
 export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -46,11 +47,14 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   };
 
   useEffect(() => {
-    startInterval();
+    if (!isHovering) {
+        startInterval();
+    }
     return () => stopInterval();
-  }, [reduceMotion]);
+  }, [reduceMotion, isHovering]);
 
   const handleMouseEnter = (audioSrc: string) => {
+    setIsHovering(true);
     stopInterval();
     if (reduceMotion) return;
 
@@ -73,6 +77,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   };
 
   const handleMouseLeave = () => {
+    setIsHovering(false);
     startInterval();
     if (audioRef.current) {
       audioRef.current.pause();
@@ -140,7 +145,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
                 key={currentVibeIndex} 
                 className={cn(
                   "font-semibold text-accent inline-block w-full pt-1 hover:underline",
-                  !reduceMotion && "animate-text-fade-in" 
+                  !reduceMotion && !isHovering && "animate-text-fade-in"
                 )}
               >
                 {vibesAndPreferences[currentVibeIndex].text}
