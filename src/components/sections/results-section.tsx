@@ -98,106 +98,109 @@ export function ResultsSection({ result, onRetakeQuiz, reduceMotion }: ResultsSe
           ))}
         </div>
       )}
+      
+      <div className="relative w-full max-w-2xl my-8 z-10">
+        <div className="w-full flex justify-start mb-6">
+            <Link href="/" passHref>
+              <Button variant="outline">
+                <Home className="mr-2 h-4 w-4" /> Home
+              </Button>
+            </Link>
+        </div>
 
-      <Card className={cn("w-full max-w-2xl text-center shadow-2xl z-10", cardAnimation)}>
-        <CardHeader className="bg-primary/10 p-6">
-           {emojiTone && <p className="text-4xl mb-2">{emojiTone}</p>}
-          <CardTitle className="text-4xl md:text-5xl font-extrabold text-primary">
-            {soundtrackTitle}
-          </CardTitle>
-          <CardDescription className="text-lg text-foreground/80 pt-2">
-            This is your current life soundtrack!
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <div className="p-4 bg-card-foreground/5 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2"><Music className="w-5 h-5 text-accent"/>The Vibe:</h3>
-            <p className="text-foreground/90 text-left md:text-center leading-relaxed">{soundtrackDescription}</p>
-          </div>
-
-          {vibeDimensions && chartData.length > 0 && (
+        <Card className={cn("w-full text-center shadow-2xl", cardAnimation)}>
+          <CardHeader className="bg-primary/10 p-6">
+             {emojiTone && <p className="text-4xl mb-2">{emojiTone}</p>}
+            <CardTitle className="text-4xl md:text-5xl font-extrabold text-primary">
+              {soundtrackTitle}
+            </CardTitle>
+            <CardDescription className="text-lg text-foreground/80 pt-2">
+              This is your current life soundtrack!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
             <div className="p-4 bg-card-foreground/5 rounded-lg">
-              <h3 className="text-xl font-semibold mb-4 text-center flex items-center justify-center gap-2 text-primary">
-                <Network className="w-6 h-6"/> Your Vibe Profile
-              </h3>
-              <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px] w-full sm:max-h-[350px]">
-                <RadarChart
-                  data={chartData}
-                  cx="50%" 
-                  cy="50%" 
-                  outerRadius="70%" // Adjusted for better fit
-                >
-                  <ChartTooltip
-                    cursor={{ fill: "hsl(var(--muted))", fillOpacity: 0.3 }}
-                    content={<ChartTooltipContent indicator="line" />}
-                  />
-                  <PolarGrid gridType="polygon" stroke="hsl(var(--border))" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }} />
-                  <PolarRadiusAxis 
-                    angle={90} 
-                    domain={[0, 100]} 
-                    tickCount={5} 
-                    tickFormatter={(value) => `${value}`} 
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={10}
-                  />
-                  <Radar
-                    name="Vibe Score" // Legend name
-                    dataKey="score" // Data key for values
-                    fill="var(--color-vibeScore)"
-                    fillOpacity={0.6}
-                    stroke="var(--color-vibeScore)"
-                  />
-                </RadarChart>
-              </ChartContainer>
+              <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2"><Music className="w-5 h-5 text-accent"/>The Vibe:</h3>
+              <p className="text-foreground/90 text-left md:text-center leading-relaxed">{soundtrackDescription}</p>
             </div>
-          )}
-          
-          <div className="p-4 bg-accent/10 rounded-lg">
-            <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2 text-primary"><ListMusic className="w-5 h-5"/>Spotify Playlist Theme:</h3>
-            <p className="text-primary text-lg font-medium">{spotifyPlaylistTheme}</p>
-            
-            {suggestedSongs && suggestedSongs.length > 0 && (
-              <div className="mt-4 text-left">
-                <h4 className="text-md font-semibold mb-2 text-primary/90">Suggested Tracks:</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-primary/80">
-                  {suggestedSongs.map((song, index) => (
-                    <li key={index}>{song}</li>
-                  ))}
-                </ul>
-                 <Button 
-                    onClick={() => window.open(createSpotifySearchUrl(), '_blank')} 
-                    variant="outline" 
-                    size="sm" 
-                    className="mt-4 w-full sm:w-auto border-primary text-primary hover:bg-primary/10 hover:text-primary"
+
+            {vibeDimensions && chartData.length > 0 && (
+              <div className="p-4 bg-card-foreground/5 rounded-lg">
+                <h3 className="text-xl font-semibold mb-4 text-center flex items-center justify-center gap-2 text-primary">
+                  <Network className="w-6 h-6"/> Your Vibe Profile
+                </h3>
+                <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px] w-full sm:max-h-[350px]">
+                  <RadarChart
+                    data={chartData}
+                    cx="50%" 
+                    cy="50%" 
+                    outerRadius="70%" // Adjusted for better fit
                   >
-                  <SpotifyIcon className="h-5 w-5 fill-current mr-2" /> Find theme on Spotify
-                </Button>
+                    <ChartTooltip
+                      cursor={{ fill: "hsl(var(--muted))", fillOpacity: 0.3 }}
+                      content={<ChartTooltipContent indicator="line" />}
+                    />
+                    <PolarGrid gridType="polygon" stroke="hsl(var(--border))" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }} />
+                    <PolarRadiusAxis 
+                      angle={90} 
+                      domain={[0, 100]} 
+                      tickCount={5} 
+                      tickFormatter={(value) => `${value}`} 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                    />
+                    <Radar
+                      name="Vibe Score" // Legend name
+                      dataKey="score" // Data key for values
+                      fill="var(--color-vibeScore)"
+                      fillOpacity={0.6}
+                      stroke="var(--color-vibeScore)"
+                    />
+                  </RadarChart>
+                </ChartContainer>
               </div>
             )}
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t">
-          <Button onClick={handleShare} size="lg" className="w-full sm:w-auto">
-            <Share2 className="mr-2 h-5 w-5" /> Share
-          </Button>
-          <Button onClick={onRetakeQuiz} variant="secondary" size="lg" className="w-full sm:w-auto">
-            <RotateCcw className="mr-2 h-5 w-5" /> Retake Quiz
-          </Button>
-           <Link href="/leaderboard" passHref>
-            <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                <BarChart3 className="mr-2 h-5 w-5" /> Leaderboard
+            
+            <div className="p-4 bg-accent/10 rounded-lg">
+              <h3 className="text-xl font-semibold mb-2 flex items-center justify-center gap-2 text-primary"><ListMusic className="w-5 h-5"/>Spotify Playlist Theme:</h3>
+              <p className="text-primary text-lg font-medium">{spotifyPlaylistTheme}</p>
+              
+              {suggestedSongs && suggestedSongs.length > 0 && (
+                <div className="mt-4 text-left">
+                  <h4 className="text-md font-semibold mb-2 text-primary/90">Suggested Tracks:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-primary/80">
+                    {suggestedSongs.map((song, index) => (
+                      <li key={index}>{song}</li>
+                    ))}
+                  </ul>
+                   <Button 
+                      onClick={() => window.open(createSpotifySearchUrl(), '_blank')} 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-4 w-full sm:w-auto border-primary text-primary hover:bg-primary/10 hover:text-primary"
+                    >
+                    <SpotifyIcon className="h-5 w-5 fill-current mr-2" /> Find theme on Spotify
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 p-6 border-t">
+            <Button onClick={handleShare} size="lg" className="w-full sm:w-auto">
+              <Share2 className="mr-2 h-5 w-5" /> Share
             </Button>
-          </Link>
-          <Link href="/" passHref>
-            <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                <Home className="mr-2 h-5 w-5" /> Home
+            <Button onClick={onRetakeQuiz} variant="secondary" size="lg" className="w-full sm:w-auto">
+              <RotateCcw className="mr-2 h-5 w-5" /> Retake Quiz
             </Button>
-          </Link>
-        </CardFooter>
-      </Card>
+             <Link href="/leaderboard" passHref>
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                  <BarChart3 className="mr-2 h-5 w-5" /> Leaderboard
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
     </section>
   );
 }
-
-
