@@ -18,6 +18,9 @@ import type { QuizInput as GI, QuizOutput as GO } from '@/ai/flows/soundtrack-ge
 export type SoundtrackGenerationInput = GI;
 export type SoundtrackGenerationOutput = GO;
 
+import type { MusicChatOutput as MCO } from '@/ai/flows/music-chat-flow';
+export type MusicChatOutput = MCO;
+
 
 // Storing user's selections. Key is question category, value is the selected option string.
 export type UserSelections = Partial<SoundtrackGenerationInput>;
@@ -27,5 +30,5 @@ export type QuizStage = 'loading' | 'intro' | 'quiz' | 'generating_results' | 'r
 // For the chatbot
 export interface ChatMessage {
   role: 'user' | 'model';
-  content: string;
+  content: string | MusicChatOutput;
 }

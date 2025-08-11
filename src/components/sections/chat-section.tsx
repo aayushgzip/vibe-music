@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { X, Send, Bot, Loader2 } from 'lucide-react';
-import type { ChatMessage } from '@/lib/types';
+import type { ChatMessage, MusicChatOutput } from '@/lib/types';
 import { getMusicRecommendation } from '@/ai/flows/music-chat-flow';
 import { ChatBubble } from '@/components/chat/chat-bubble';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,7 @@ interface ChatSectionProps {
 
 export function ChatSection({ onExitChat }: ChatSectionProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', content: "Hey there! I'm VibeBot. What kind of music are you in the mood for? Tell me about your day, your favorite genre, or what you're doing right now." }
+    { role: 'model', content: { response: "Hey there! I'm VibeBot. What kind of music are you in the mood for? Tell me about your day, your favorite genre, or what you're doing right now." } }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,14 +41,15 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
     setIsLoading(true);
     setError(null);
 
-    const chatHistory = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content
-    }));
+    // Prepare history for the AI, handling both string and object content
+    const chatHistory = messages.map(msg => {
+      const content = typeof msg.content === 'string' ? msg.content : msg.content.response;
+      return { role: msg.role, content };
+    });
 
     try {
-      const result = await getMusicRecommendation({ history: chatHistory, message: input });
-      const modelMessage: ChatMessage = { role: 'model', content: result.response };
+      const result: MusicChatOutput = await getMusicRecommendation({ history: chatHistory, message: input });
+      const modelMessage: ChatMessage = { role: 'model', content: result };
       setMessages(prev => [...prev, modelMessage]);
     } catch (err) {
       console.error("Failed to get music recommendation:", err);
@@ -77,9 +78,11 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
           </Button>
         </CardHeader>
         <CardContent className="flex-grow overflow-y-auto p-6 space-y-6">
-          {messages.map((msg, index) => (
-            <ChatBubble key={index} role={msg.role} content={msg.content} />
-          ))}
+          <div className="flex flex-col items-start gap-4">
+             {messages.map((msg, index) => (
+                <ChatBubble key={index} role={msg.role} content={msg.content} />
+             ))}
+          </div>
           {isLoading && (
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/20">
