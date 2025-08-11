@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { X, Send, Bot, Loader2 } from 'lucide-react';
+import { X, Send, Bot, Loader2, Sparkles } from 'lucide-react';
 import type { ChatMessage, MusicChatOutput } from '@/lib/types';
 import { getMusicRecommendation } from '@/ai/flows/music-chat-flow';
 import { ChatBubble } from '@/components/chat/chat-bubble';
@@ -14,6 +14,12 @@ import { cn } from '@/lib/utils';
 interface ChatSectionProps {
   onExitChat: () => void;
 }
+
+const suggestions = [
+  "Music for a rainy day",
+  "Upbeat songs for a road trip",
+  "Chill vibes for relaxing",
+];
 
 export function ChatSection({ onExitChat }: ChatSectionProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -24,18 +30,18 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
   const [error, setError] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(scrollToBottom, [messages]);
+  
+  const handleSendMessage = async (messageText: string) => {
+    if (!messageText.trim()) return;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage: ChatMessage = { role: 'user', content: input };
+    const userMessage: ChatMessage = { role: 'user', content: messageText };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -43,12 +49,13 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
 
     // Prepare history for the AI, handling both string and object content
     const chatHistory = messages.map(msg => {
-      const content = typeof msg.content === 'string' ? msg.content : msg.content.response;
+      // The content for the model can now be a structured object, so we use z.any()
+      const content = typeof msg.content === 'string' ? msg.content : (msg.content as MusicChatOutput);
       return { role: msg.role, content };
     });
 
     try {
-      const result: MusicChatOutput = await getMusicRecommendation({ history: chatHistory, message: input });
+      const result: MusicChatOutput = await getMusicRecommendation({ history: chatHistory, message: messageText });
       const modelMessage: ChatMessage = { role: 'model', content: result };
       setMessages(prev => [...prev, modelMessage]);
     } catch (err) {
@@ -57,7 +64,16 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSendMessage(input);
   };
+  
+  const handleSuggestionClick = (suggestion: string) => {
+    handleSendMessage(suggestion);
+  }
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center p-4 gradient-background">
@@ -83,6 +99,20 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
                 <ChatBubble key={index} role={msg.role} content={msg.content} />
              ))}
           </div>
+
+          {messages.length === 1 && !isLoading && (
+              <div className="flex flex-col items-start gap-2 animate-in fade-in-0 duration-500">
+                  <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5"><Sparkles className="h-4 w-4" /> Not sure what to ask? Try one of these:</p>
+                  <div className="flex flex-wrap gap-2">
+                      {suggestions.map((s, i) => (
+                          <Button key={i} variant="outline" size="sm" onClick={() => handleSuggestionClick(s)}>
+                              {s}
+                          </Button>
+                      ))}
+                  </div>
+              </div>
+          )}
+          
           {isLoading && (
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/20">
@@ -107,7 +137,7 @@ export function ChatSection({ onExitChat }: ChatSectionProps) {
           <div ref={messagesEndRef} />
         </CardContent>
         <CardFooter className="border-t pt-6">
-          <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
+          <form ref={formRef} onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}

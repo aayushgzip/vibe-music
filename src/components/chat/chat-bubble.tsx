@@ -3,7 +3,7 @@
 
 import { Bot, User, Music, ListMusic } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ChatMessage } from '@/lib/types';
+import type { ChatMessage, MusicChatOutput } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 
 
@@ -47,7 +47,7 @@ export function ChatBubble({ role, content }: ChatMessage) {
     }
     
     // It's a model response with a potential playlist
-    const { response, playlist } = content;
+    const { response, playlist } = content as MusicChatOutput;
     
     return (
         <div className="space-y-4">
