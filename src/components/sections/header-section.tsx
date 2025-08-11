@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
@@ -15,14 +16,14 @@ interface HeaderSectionProps {
 }
 
 const vibesAndPreferences = [
-  "Chill Lo-fi Beats for Focus",
-  "Upbeat Pop for a Sunny Day",
-  "Epic Orchestral for Adventures",
-  "Indie Folk for Cozy Evenings",
-  "Driving Basslines for the Night Out",
-  "Ambient Sounds for Relaxation",
-  "Throwback Hits for Nostalgia",
-  "Energetic Rock to Power Through",
+  { text: "Chill Lo-fi Beats for Focus", url: "https://open.spotify.com/search/Chill%20Lo-fi%20Beats%20for%20Focus" },
+  { text: "Upbeat Pop for a Sunny Day", url: "https://open.spotify.com/search/Upbeat%20Pop%20for%20a%20Sunny%20Day" },
+  { text: "Epic Orchestral for Adventures", url: "https://open.spotify.com/search/Epic%20Orchestral%20for%20Adventures" },
+  { text: "Indie Folk for Cozy Evenings", url: "https://open.spotify.com/search/Indie%20Folk%20for%20Cozy%20Evenings" },
+  { text: "Driving Basslines for the Night Out", url: "https://open.spotify.com/search/Driving%20Basslines%20for%20the%20Night%20Out" },
+  { text: "Ambient Sounds for Relaxation", url: "https://open.spotify.com/search/Ambient%20Sounds%20for%20Relaxation" },
+  { text: "Throwback Hits for Nostalgia", url: "https://open.spotify.com/search/Throwback%20Hits%20for%20Nostalgia" },
+  { text: "Energetic Rock to Power Through", url: "https://open.spotify.com/search/Energetic%20Rock%20to%20Power%20Through" },
 ];
 
 export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
@@ -76,15 +77,17 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
         <div className={cn("text-lg md:text-xl text-foreground/80 min-h-[5rem] md:min-h-[3rem]", subtitleAnimation)}>
           <p>
             Discover your theme for:
-            <span 
-              key={currentVibeIndex} 
-              className={cn(
-                "font-semibold text-accent inline-block w-full pt-1",
-                !reduceMotion && "animate-text-fade-in" 
-              )}
-            >
-              {vibesAndPreferences[currentVibeIndex]}
-            </span>
+            <Link href={vibesAndPreferences[currentVibeIndex].url} target="_blank" rel="noopener noreferrer" className="block">
+              <span 
+                key={currentVibeIndex} 
+                className={cn(
+                  "font-semibold text-accent inline-block w-full pt-1 hover:underline",
+                  !reduceMotion && "animate-text-fade-in" 
+                )}
+              >
+                {vibesAndPreferences[currentVibeIndex].text}
+              </span>
+            </Link>
           </p>
           <p className="mt-2">
            Dive in and find the unique sound that defines your current moment! ✨🎶
