@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
-import { MessageCircle, Info } from "lucide-react";
+import { MessageCircle, Info, Play, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from '@/hooks/use-toast';
 
@@ -30,7 +30,12 @@ const vibesAndPreferences = [
 export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const hoverAudioRef = useRef<HTMLAudioElement | null>(null);
+  const loopAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const [loopingAudio, setLoopingAudio] = useState<{ src: string; isPlaying: boolean } | null>(null);
+  
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
@@ -46,8 +51,8 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
               <span>Pro Tip!</span>
             </div>
           ),
-          description: "Hover over the theme names to hear a music snippet!",
-          duration: 5000,
+          description: "Hover over theme names for a preview, or click play to loop the music!",
+          duration: 6000,
         });
         sessionStorage.setItem('vibetune_toast_shown', 'true');
       }, 2000);
@@ -80,20 +85,20 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   const handleMouseEnter = (audioSrc: string) => {
     setIsHovering(true);
     stopInterval();
-    if (reduceMotion) return;
+    if (reduceMotion || (loopingAudio && loopingAudio.isPlaying)) return;
 
-    if (audioRef.current && audioRef.current.src !== audioSrc) {
-        audioRef.current.pause();
-        audioRef.current = null;
+    if (hoverAudioRef.current && hoverAudioRef.current.src !== audioSrc) {
+        hoverAudioRef.current.pause();
+        hoverAudioRef.current = null;
     }
     
-    if (!audioRef.current) {
-        audioRef.current = new Audio(audioSrc);
-        audioRef.current.volume = 0.3;
+    if (!hoverAudioRef.current) {
+        hoverAudioRef.current = new Audio(audioSrc);
+        hoverAudioRef.current.volume = 0.3;
     }
     
-    audioRef.current.currentTime = 0;
-    audioRef.current.play().catch(e => {
+    hoverAudioRef.current.currentTime = 0;
+    hoverAudioRef.current.play().catch(e => {
         if ((e as DOMException).name !== 'AbortError') {
             console.error("Audio play error", e);
         }
@@ -103,18 +108,49 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   const handleMouseLeave = () => {
     setIsHovering(false);
     startInterval();
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
+    if (hoverAudioRef.current) {
+      hoverAudioRef.current.pause();
+      hoverAudioRef.current = null;
+    }
+  };
+
+  const handleLoopToggle = (audioSrc: string) => {
+    // If another song is looping, stop it first.
+    if (loopAudioRef.current && loopAudioRef.current.src !== audioSrc) {
+        loopAudioRef.current.pause();
+        loopAudioRef.current = null;
+    }
+
+    // If we're toggling the current looping song
+    if (loopingAudio && loopingAudio.src === audioSrc) {
+        const shouldPlay = !loopingAudio.isPlaying;
+        if (loopAudioRef.current) {
+            if (shouldPlay) {
+                loopAudioRef.current.play();
+            } else {
+                loopAudioRef.current.pause();
+            }
+        }
+        setLoopingAudio({ src: audioSrc, isPlaying: shouldPlay });
+    } else { // It's a new song to loop
+        if(hoverAudioRef.current) hoverAudioRef.current.pause(); // Stop hover audio
+        
+        if(!loopAudioRef.current) {
+            loopAudioRef.current = new Audio(audioSrc);
+            loopAudioRef.current.loop = true;
+            loopAudioRef.current.volume = 0.4;
+        }
+        
+        loopAudioRef.current.play();
+        setLoopingAudio({ src: audioSrc, isPlaying: true });
     }
   };
   
   useEffect(() => {
     // Cleanup audio on component unmount
     return () => {
-       if (audioRef.current) {
-          audioRef.current.pause();
-       }
+       if (hoverAudioRef.current) hoverAudioRef.current.pause();
+       if (loopAudioRef.current) loopAudioRef.current.pause();
        stopInterval();
     };
   }, []);
@@ -157,25 +193,36 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
         <div className={cn("text-lg md:text-xl text-foreground/80 min-h-[5rem] md:min-h-[3rem]", subtitleAnimation)}>
           <p>
             Discover your theme for:
+          </p>
+          <div className="flex items-center justify-center gap-2 mt-1">
+             <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => handleLoopToggle(vibesAndPreferences[currentVibeIndex].audioSrc)}
+                className="h-8 w-8 text-accent"
+              >
+                {loopingAudio && loopingAudio.src === vibesAndPreferences[currentVibeIndex].audioSrc && loopingAudio.isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                <span className="sr-only">Play/Pause Loop</span>
+              </Button>
             <Link 
               href={vibesAndPreferences[currentVibeIndex].url} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="block"
+              className="block min-w-[300px]"
               onMouseEnter={() => handleMouseEnter(vibesAndPreferences[currentVibeIndex].audioSrc)}
               onMouseLeave={handleMouseLeave}
             >
               <span 
                 key={currentVibeIndex} 
                 className={cn(
-                  "font-semibold text-accent inline-block w-full pt-1 hover:underline",
+                  "font-semibold text-accent inline-block w-full hover:underline",
                   !reduceMotion && !isHovering && "animate-text-fade-in"
                 )}
               >
                 {vibesAndPreferences[currentVibeIndex].text}
               </span>
             </Link>
-          </p>
+          </div>
           <p className="mt-2">
            Dive in and find the unique sound that defines your current moment! ✨🎶
           </p>
@@ -208,3 +255,5 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
     </section>
   );
 }
+
+    
