@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from '@/hooks/use-toast';
 
 interface HeaderSectionProps {
   onStartQuiz: () => void;
@@ -31,6 +32,29 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: Header
   const [isHovering, setIsHovering] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Show a one-time instructional toast
+    const hasShownToast = sessionStorage.getItem('vibetune_toast_shown');
+    if (!hasShownToast) {
+      const timer = setTimeout(() => {
+        toast({
+          title: (
+            <div className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-accent" />
+              <span>Pro Tip!</span>
+            </div>
+          ),
+          description: "Hover over the theme names to hear a music snippet!",
+          duration: 5000,
+        });
+        sessionStorage.setItem('vibetune_toast_shown', 'true');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
 
   const startInterval = () => {
     if (reduceMotion || intervalRef.current) return;
