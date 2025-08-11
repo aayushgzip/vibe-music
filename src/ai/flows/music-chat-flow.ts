@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -40,10 +41,11 @@ Keep your responses concise, friendly, and helpful.
 
 Here is the conversation history:
 {{#each history}}
-{{#if (eq this.role 'user')}}
-User: {{{this.content}}}
-{{else}}
-VibeBot: {{{this.content}}}
+{{#if isUser}}
+User: {{{content}}}
+{{/if}}
+{{#if isModel}}
+VibeBot: {{{content}}}
 {{/if}}
 {{/each}}
 
@@ -61,7 +63,14 @@ const getMusicRecommendationFlow = ai.defineFlow(
     outputSchema: MusicChatOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    // Restructure history for Handlebars `if` helper
+    const historyWithRoles = input.history.map(item => ({
+      ...item,
+      isUser: item.role === 'user',
+      isModel: item.role === 'model'
+    }));
+    
+    const {output} = await prompt({...input, history: historyWithRoles});
     return output!;
   }
 );
