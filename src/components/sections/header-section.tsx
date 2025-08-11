@@ -75,13 +75,13 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, loopingA
   };
 
   useEffect(() => {
-    if (!isHovering && !(loopingAudio && loopingAudio.isPlaying)) {
+    if (!isHovering) {
         startInterval();
     } else {
         stopInterval();
     }
     return () => stopInterval();
-  }, [reduceMotion, isHovering, loopingAudio]);
+  }, [reduceMotion, isHovering]);
 
   const handleMouseEnter = (audioSrc: string) => {
     setIsHovering(true);
