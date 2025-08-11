@@ -20,7 +20,6 @@ export default function VibeTunePage() {
   
   const [sfxEnabled, setSfxEnabled] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
-  const [moodColor, setMoodColor] = useState<string | null>(null);
 
   useEffect(() => {
     if (reduceMotion) {
@@ -71,20 +70,10 @@ export default function VibeTunePage() {
     setQuizStage('intro');
   }
 
-  const handleMoodChange = (color: string) => {
-    setMoodColor(color);
-    // Placeholder for audio playback logic
-    // You could have a map of color ranges to audio snippets
-    // and play the corresponding one here.
-    // e.g., playMoodSound(color);
-  };
-
-  const pageStyle = moodColor ? { backgroundColor: moodColor, transition: 'background-color 0.5s ease' } : {};
-
   const renderContent = () => {
     switch (quizStage) {
       case 'intro':
-        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} onMoodChange={handleMoodChange} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} />;
       case 'chat':
         return <ChatSection onExitChat={handleExitChat} />;
       case 'loading':
@@ -117,12 +106,12 @@ export default function VibeTunePage() {
             </section>
         );
       default:
-        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} onMoodChange={handleMoodChange} />;
+        return <HeaderSection onStartQuiz={handleStartQuiz} onStartChat={handleStartChat} reduceMotion={reduceMotion} />;
     }
   };
 
   return (
-    <main className={cn("min-h-screen w-full", reduceMotion && "reduce-motion-active", quizStage !== 'intro' && 'gradient-background')} style={quizStage === 'intro' ? pageStyle : {}}>
+    <main className={cn("min-h-screen w-full", reduceMotion && "reduce-motion-active", quizStage !== 'intro' && 'gradient-background')}>
       {renderContent()}
       <AudioControl 
         sfxEnabled={sfxEnabled} 

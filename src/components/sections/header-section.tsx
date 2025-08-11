@@ -6,14 +6,12 @@ import { Button } from "@/components/ui/button";
 import { MusicNoteIcon } from "@/components/icons/music-note-icon";
 import { SoundwaveIcon } from "@/components/icons/soundwave-icon";
 import { MessageCircle } from "lucide-react";
-import { MoodGradientBar } from "@/components/mood-gradient-bar";
 import { cn } from "@/lib/utils";
 
 interface HeaderSectionProps {
   onStartQuiz: () => void;
   onStartChat: () => void;
   reduceMotion: boolean;
-  onMoodChange: (color: string) => void;
 }
 
 const vibesAndPreferences = [
@@ -27,7 +25,7 @@ const vibesAndPreferences = [
   "Energetic Rock to Power Through",
 ];
 
-export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, onMoodChange }: HeaderSectionProps) {
+export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion }: HeaderSectionProps) {
   const [currentVibeIndex, setCurrentVibeIndex] = useState(0);
 
   useEffect(() => {
@@ -45,7 +43,7 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, onMoodCh
   const buttonAnimation = !reduceMotion ? "animate-in fade-in-0 zoom-in-90 delay-500 duration-500 ease-out" : "";
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 relative overflow-hidden">
+    <section className="min-h-screen flex flex-col items-center justify-center text-center p-6 relative overflow-hidden gradient-background">
       <div className="absolute inset-0 opacity-10 dark:opacity-5">
         {[...Array(5)].map((_, i) => (
           <MusicNoteIcon
@@ -94,7 +92,6 @@ export function HeaderSection({ onStartQuiz, onStartChat, reduceMotion, onMoodCh
         </div>
 
         <div className="pt-4 space-y-6">
-            <MoodGradientBar onMoodChange={onMoodChange} />
             <div className={cn("flex flex-col sm:flex-row items-center justify-center gap-4 pt-4", buttonAnimation)}>
                 <Button
                     size="lg"
